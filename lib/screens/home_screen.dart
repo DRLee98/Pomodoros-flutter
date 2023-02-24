@@ -12,8 +12,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   static const twentyFiveMinutes = 1500;
   int totalSeconds = twentyFiveMinutes;
-  bool isRunning = false;
   int totalPomodoros = 0;
+  bool isRunning = false;
+  bool showReset = false;
   late Timer timer;
 
   void onTick(Timer timer) {
@@ -37,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
     setState(() {
       isRunning = true;
+      showReset = false;
     });
   }
 
@@ -44,6 +46,14 @@ class _HomeScreenState extends State<HomeScreen> {
     timer.cancel();
     setState(() {
       isRunning = false;
+      showReset = true;
+    });
+  }
+
+  void onReset() {
+    setState(() {
+      showReset = false;
+      totalSeconds = twentyFiveMinutes;
     });
   }
 
@@ -75,13 +85,31 @@ class _HomeScreenState extends State<HomeScreen> {
           Flexible(
             flex: 3,
             child: Center(
-              child: IconButton(
-                iconSize: 120,
-                color: Theme.of(context).cardColor,
-                onPressed: isRunning ? onPausePressed : onStartPressed,
-                icon: Icon(isRunning
-                    ? Icons.pause_circle_outline
-                    : Icons.play_circle_outline),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    iconSize: 120,
+                    color: Theme.of(context).cardColor,
+                    onPressed: isRunning ? onPausePressed : onStartPressed,
+                    icon: Icon(isRunning
+                        ? Icons.pause_circle_outline
+                        : Icons.play_circle_outline),
+                  ),
+                  Visibility(
+                    visible: showReset,
+                    child: Transform.translate(
+                      offset: const Offset(0, 30),
+                      child: IconButton(
+                        style: const ButtonStyle(),
+                        iconSize: 60,
+                        color: Theme.of(context).cardColor,
+                        onPressed: onReset,
+                        icon: const Icon(Icons.restart_alt),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
